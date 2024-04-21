@@ -1,19 +1,24 @@
-import requests
+import re
+import codecs
+import numpy as np
+from gensim.models import KeyedVectors
 from fuzzywuzzy import fuzz
 
 def search(file_path, query):
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with codecs.open(file_path, 'r', encoding='utf-8') as file:
         content = file.read().lower()
 
-    words = content.split()
+    words = re.findall(r'\b\w+\b', content)
 
     results = []
 
-    for word in words:
-        score = fuzz.token_set_ratio(query.lower(), word)
+    for i in range(len(words)):
+        score = fuzz.token_set_ratio(query.lower(), words[i])
         if score >= 70:
-            # эта строка кода преобразует каждое слово в строке так, чтобы оно начиналось с большой буквы, а за ним следовали все слова до следующего слова, начинающегося с большой буквы.
-            results.append(word.capitalize() + ' ' + ' '.join(words[words.index(word) + 1: words.index(words[words.index(word) + 1]) if words.index(word) + 1 < len(words) else len(words)]))
+            start_index = i - 10 if i > 10 else 0
+            end_index = i + 10 if i + 10 < len(words) else len(words)
+            sentence = ' '.join(words[start_index:end_index])
+            results.append(sentence.capitalize())
 
     return results
 
