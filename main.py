@@ -1,7 +1,4 @@
 import re
-import codecs
-import numpy as np
-from gensim.models import KeyedVectors
 from fuzzywuzzy import fuzz
 
 def search(file_path, query):
